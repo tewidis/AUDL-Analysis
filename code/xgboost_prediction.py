@@ -10,7 +10,7 @@ def main():
     df = pd.read_csv('/home/twidis/ultianalytics/data/combined_data.csv');
 
     # split into features and values
-    X = df.iloc[:,2:13];
+    X = df.iloc[:,4:13];
     Y = df.iloc[:,13];
 
     # split into training and test datasets

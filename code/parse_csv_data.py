@@ -4,8 +4,21 @@ import pandas as pd
 import numpy as np
 
 def main():
+    seasons = [2014, 2015, 2016, 2017, 2018, 2019];
+    #for season in seasons:
+    #    process_season("/home/twidis/ultianalytics/data/" + str(season) + "/", season);
+
+    # combine all of the seasons into one csv
+    df = [];
+    for season in seasons:
+        df.append(pd.read_csv("/home/twidis/ultianalytics/data/" + str(season) + "/combined_data.csv"));
+
+    all_data = pd.concat(df, ignore_index=True);
+    all_data.to_csv('/home/twidis/ultianalytics/data/all_data.csv',mode='a',index=False);
+
+def process_season(filepath, year):
     # get a list of the csv files
-    files = subprocess.check_output(["find", "/home/twidis/ultianalytics/data/", "-iname", "*csv"]);
+    files = subprocess.check_output(["find", filepath, "-iname", "*csv"]);
     files = files.split();
 
     # loop over the files and process the data
@@ -14,7 +27,7 @@ def main():
         curr_file = str(curr_file);
         curr_file = curr_file[2:len(curr_file)-1];
 
-        if curr_file == '/home/twidis/ultianalytics/data/combined_data.csv':
+        if curr_file == filepath + 'combined_data.csv':
             continue;
 
         data = pd.read_csv(curr_file, usecols=['Date/Time','Opponent','Line','Our Score - End of Point','Their Score - End of Point', 'Action', 'Hang Time (secs)'], index_col=False);
@@ -22,7 +35,7 @@ def main():
         game_dates = data.Date.unique();
 
         for ii in range(len(game_dates)):
-            game_data = process_game_dataframe(data[data.Date==game_dates[ii]], curr_file[len('/home/twidis/ultianalytics/data/'):-4]);
+            game_data = process_game_dataframe(data[data.Date==game_dates[ii]], curr_file[len(filepath):-4], year);
             if ii == 0:
                 season_data = game_data;
             else:
@@ -30,13 +43,13 @@ def main():
 
         # write the data to a combined file so we don't have to reread all data
         if write_header:
-            season_data.to_csv('/home/twidis/ultianalytics/data/combined_data.csv',mode='a',index=False);
+            season_data.to_csv(filepath + 'combined_data.csv',mode='a',index=False);
             write_header = False;
         else:
-            season_data.to_csv('/home/twidis/ultianalytics/data/combined_data.csv',mode='a',index=False,header=False);
+            season_data.to_csv(filepath + 'combined_data.csv',mode='a',index=False,header=False);
 
 
-def process_game_dataframe(df, name):
+def process_game_dataframe(df, name, year):
     # initialize some variables
     goals = df.TeamScore.iloc[-1];
     goals_against = df.OppScore.iloc[-1];
@@ -70,10 +83,14 @@ def process_game_dataframe(df, name):
         avg_hangtime = np.mean(hang_times);
     else:
         avg_hangtime = 6;
+
     avg_throws_per_score = throws/goals;
     completion_percentage = catches/throws;
     throwing_percentage = (throws-throwaways)/throws;
-    catching_percentage = (catches-drops)/catches;
+    if catches == 0:
+        catching_percentage = 0;
+    else:
+        catching_percentage = (catches-drops)/catches;
 
     if goals > goals_against:
         win = 1;
@@ -82,7 +99,7 @@ def process_game_dataframe(df, name):
 
     # build up a new dataframe to return with the statistics for this game
     game_data = pd.DataFrame(columns=['Name','Opponent','Goals','GoalsAgainst','Throws','Catches','Turnovers','Forced_Turns','AvgHangTime','AvgThrowsPerScore','CompletionPct','ThrowingPct','CatchingPct','Win']);
-    game_data.loc[0] = [name,opponent,goals,goals_against,throws,catches,turns,forced_turns,avg_hangtime,avg_throws_per_score,completion_percentage,throwing_percentage,catching_percentage,win];
+    game_data.loc[0] = [year,name,opponent,goals,goals_against,throws,catches,turns,forced_turns,avg_hangtime,avg_throws_per_score,completion_percentage,throwing_percentage,catching_percentage,win];
 
     return game_data;
 

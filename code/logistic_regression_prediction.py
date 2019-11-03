@@ -5,11 +5,11 @@ from sklearn.metrics import accuracy_score
 
 def main():
     # read in the processed data
-    df = pd.read_csv('/home/twidis/ultianalytics/data/combined_data.csv');
+    df = pd.read_csv('/home/twidis/ultianalytics/data/all_data.csv');
 
     # split into features and values
-    X = df.iloc[:,4:13];
-    Y = df.iloc[:,13];
+    X = df.iloc[:,5:14];
+    Y = df.iloc[:,14];
 
     # split into training and test datasets
     seed = 7;

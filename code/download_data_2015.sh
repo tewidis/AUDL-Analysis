@@ -17,7 +17,7 @@ curl -LO https://www.ultianalytics.com/rest/view/team/5674069752020992/stats/exp
 mv export /home/twidis/ultianalytics/data/2015/cincinnati_revolution.csv
 
 # DC Breeze
-curl -LO https://www.ultianalytics.com/rest/view/team/5636093192245248/stats/export
+curl -LO https://www.ultianalytics.com/rest/view/team/5635093192245248/stats/export
 mv export /home/twidis/ultianalytics/data/2015/dc_breeze.csv
 
 # Detroit Mechanix

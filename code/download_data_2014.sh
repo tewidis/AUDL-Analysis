@@ -13,7 +13,7 @@ curl -LO https://www.ultianalytics.com/rest/view/team/4868028676177920/stats/exp
 mv export /home/twidis/ultianalytics/data/2014/dc_breeze.csv
 
 # Detroit Mechanix
-curl -LO https://www.ultianalytics.com/rest/view/team/5864961520648192/stats/export
+curl -LO https://www.ultianalytics.com/rest/view/team/5684961520648192/stats/export
 mv export /home/twidis/ultianalytics/data/2014/detroit_mechanix.csv
 
 # Indianapolis AlleyCats
@@ -49,7 +49,7 @@ curl -LO https://www.ultianalytics.com/rest/view/team/5662069344960512/stats/exp
 mv export /home/twidis/ultianalytics/data/2014/salt_lake_lions.csv
 
 # San Francisco Flamethrowers
-curl -LO https://www.ultianalytics.com/rest/view/team/5094953273282080/stats/export
+curl -LO https://www.ultianalytics.com/rest/view/team/5094953273262080/stats/export
 mv export /home/twidis/ultianalytics/data/2014/san_francisco_flamethrowers.csv
 
 # San Jose Spiders

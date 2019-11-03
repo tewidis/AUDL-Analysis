@@ -45,7 +45,7 @@ curl -LO https://www.ultianalytics.com/rest/view/team/4919856549855232/stats/exp
 mv export /home/twidis/ultianalytics/data/2016/los_angeles_aviators.csv
 
 # Madison Radicals
-curl -LO https://www.ultianalytics.com/rest/view/team/5114556584520064/stats/export
+curl -LO https://www.ultianalytics.com/rest/view/team/5114556594520064/stats/export
 mv export /home/twidis/ultianalytics/data/2016/madison_radicals.csv
 
 # Minnesota Wind Chill

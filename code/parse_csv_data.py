@@ -5,8 +5,9 @@ import numpy as np
 
 def main():
     seasons = [2014, 2015, 2016, 2017, 2018, 2019];
-    #for season in seasons:
-    #    process_season("/home/twidis/ultianalytics/data/" + str(season) + "/", season);
+    for season in seasons:
+        process_season("/home/twidis/ultianalytics/data/" + str(season) + "/", season);
+        print("{} season completed".format(str(season)));
 
     # combine all of the seasons into one csv
     df = [];
@@ -77,20 +78,17 @@ def process_game_dataframe(df, name, year):
             drops = drops + 1;
 
     # calculate the derived statistics
-    throws = catches + drops;
+    throws = catches + drops + forced_turns + throwaways;
     turns = throwaways + drops;
     if not hang_times == []:
         avg_hangtime = np.mean(hang_times);
     else:
         avg_hangtime = 6;
 
-    avg_throws_per_score = throws/goals;
+    avg_throws_per_score  = throws/goals;
     completion_percentage = catches/throws;
-    throwing_percentage = (throws-throwaways)/throws;
-    if catches == 0:
-        catching_percentage = 0;
-    else:
-        catching_percentage = (catches-drops)/catches;
+    throwing_percentage   = throws/(throws+throwaways);
+    catching_percentage   = catches/(catches+drops);
 
     if goals > goals_against:
         win = 1;
@@ -98,7 +96,7 @@ def process_game_dataframe(df, name, year):
         win = 0;
 
     # build up a new dataframe to return with the statistics for this game
-    game_data = pd.DataFrame(columns=['Name','Opponent','Goals','GoalsAgainst','Throws','Catches','Turnovers','Forced_Turns','AvgHangTime','AvgThrowsPerScore','CompletionPct','ThrowingPct','CatchingPct','Win']);
+    game_data = pd.DataFrame(columns=['Year','Name','Opponent','Goals','GoalsAgainst','Throws','Catches','Turnovers','Forced_Turns','AvgHangTime','AvgThrowsPerScore','CompletionPct','ThrowingPct','CatchingPct','Win']);
     game_data.loc[0] = [year,name,opponent,goals,goals_against,throws,catches,turns,forced_turns,avg_hangtime,avg_throws_per_score,completion_percentage,throwing_percentage,catching_percentage,win];
 
     return game_data;

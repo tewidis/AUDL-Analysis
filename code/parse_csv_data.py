@@ -52,6 +52,7 @@ def process_season(filepath, year):
 
 def process_game_dataframe(df, name, year):
     # initialize some variables
+    date = df.Date.iloc[-1];
     goals = df.TeamScore.iloc[-1];
     goals_against = df.OppScore.iloc[-1];
     opponent = df.Opponent.iloc[-1].replace(' ', '_').lower();
@@ -96,8 +97,8 @@ def process_game_dataframe(df, name, year):
         win = 0;
 
     # build up a new dataframe to return with the statistics for this game
-    game_data = pd.DataFrame(columns=['Year','Name','Opponent','Goals','GoalsAgainst','Throws','Catches','Turnovers','Forced_Turns','AvgHangTime','AvgThrowsPerScore','CompletionPct','ThrowingPct','CatchingPct','Win']);
-    game_data.loc[0] = [year,name,opponent,goals,goals_against,throws,catches,turns,forced_turns,avg_hangtime,avg_throws_per_score,completion_percentage,throwing_percentage,catching_percentage,win];
+    game_data = pd.DataFrame(columns=['Date','Name','Opponent','Goals','GoalsAgainst','Throws','Catches','Turnovers','Forced_Turns','AvgHangTime','AvgThrowsPerScore','CompletionPct','ThrowingPct','CatchingPct','Win']);
+    game_data.loc[0] = [date,name,opponent,goals,goals_against,throws,catches,turns,forced_turns,avg_hangtime,avg_throws_per_score,completion_percentage,throwing_percentage,catching_percentage,win];
 
     return game_data;
 

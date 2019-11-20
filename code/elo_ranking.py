@@ -1,9 +1,10 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import os
+import operator
 
 def main():
     df = pd.read_csv('/home/twidis/ultianalytics/data/cleaned_data.csv');
@@ -24,10 +25,19 @@ def main():
 
     # plot elo scores over time
     pd.plotting.register_matplotlib_converters();
-    fig1 = plt.figure();
-    fig2 = plt.figure();
-    ax1  = fig1.add_axes([0,0,1,1]);
-    ax2  = fig2.add_axes([0,0,1,1]);
+    years = [2014, 2015, 2016, 2017, 2018, 2019];
+    fig1    = plt.figure();
+    fig2    = plt.figure();
+
+    fig = {};
+    axs = {};
+    legends = {};
+    for year in years:
+        fig[year] = plt.figure();
+        axs[year] = fig[year].add_axes([0,0,1,1]);
+        legends[year] = [];
+    ax1 = fig1.add_axes([0,0,1,1]);
+    ax2 = fig2.add_axes([0,0,1,1]);
 
     # break the list of tuples into dates and scores
     for name in np.unique(df['Name']):
@@ -37,24 +47,65 @@ def main():
         ax1.plot(dates, scores);
         ax2.plot(scores);
 
+        # plot elo scores year by year
+        for year in years:
+            indices = [];
+            for count,date in enumerate(dates):
+                if date.year == year:
+                    indices.append(count);
+
+            if not indices == []:
+                indices = operator.itemgetter(indices);
+                axs[year].plot(indices(np.array(dates)), indices(np.array(scores)));
+                legends[year].append(name);
+
     # add legends, labels, make the plots prettier
-    ax1.legend(np.unique(df['Name']), bbox_to_anchor=(0.,1.02,1.,.102), loc='lower left', \
+    anchor_point = (0.,-0.85,1.,.102);
+    ax1.legend(np.unique(df['Name']), bbox_to_anchor=anchor_point, loc='lower left', \
             ncol=2, mode='expand', borderaxespad=0.);
-    ax2.legend(np.unique(df['Name']), bbox_to_anchor=(0.,1.02,1.,.102), loc='lower left', \
+    ax2.legend(np.unique(df['Name']), bbox_to_anchor=anchor_point, loc='lower left', \
             ncol=2, mode='expand', borderaxespad=0.);
+
+    for year in years:
+        axs[year].set_xlabel('Time');
+        axs[year].set_ylabel('Elo Rating');
+        axs[year].set_title(str(year) + ' Season');
+        axs[year].grid(b=True,which='major',axis='both');
+        axs[year].legend(legends[year],bbox_to_anchor=anchor_point, loc='lower left', \
+            ncol=2, mode='expand', borderaxespad=0.);
+        plt.setp(axs[year].xaxis.get_majorticklabels(), rotation=45);
+        filepath = '/home/twidis/ultianalytics/plots/elo_' + str(year) + '_season.png';
+        os.remove(filepath);
+        fig[year].savefig(filepath, bbox_inches='tight');
+        plt.close(fig[year]);
+
+    # set xlabels
     ax1.set_xlabel('Time');
     ax2.set_xlabel('Time');
+
+    # set ylabels
     ax1.set_ylabel('Elo Rating');
     ax2.set_ylabel('Elo Rating');
+
+    # set titles
+    ax1.set_title('Elo Scores Across Seasons');
+    ax2.set_title('Elo Scores');
+
+    # turn on grids
+    ax1.grid(b=True,which='major',axis='both');
+    ax2.grid(b=True,which='major',axis='both');
 
     # save the figures
     filepath1 = '/home/twidis/ultianalytics/plots/elo_scores_over_time.png';
     filepath2 = '/home/twidis/ultianalytics/plots/elo_scores.png';
     os.remove(filepath1);
     os.remove(filepath2);
+
     fig1.savefig(filepath1, bbox_inches='tight');
     fig2.savefig(filepath2, bbox_inches='tight');
 
+    plt.close(fig1);
+    plt.close(fig2);
 
 def get_elo(score1, score2, team1_win):
     # function that takes in two elo scores and who won and returns updated scores

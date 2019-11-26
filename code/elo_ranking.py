@@ -2,7 +2,9 @@
 
 import pandas as pd
 import numpy as np
+import numpy.matlib
 import matplotlib.pyplot as plt
+import math
 import os
 import operator
 
@@ -19,15 +21,15 @@ def main():
     for idx in range(len(df)):
         team1 = df.loc[idx]['Name'];
         team2 = df.loc[idx]['Opponent'];
-        new_score1, new_score2 = get_elo(team_data[team1][-1], team_data[team2][-1], 0);
+        new_score1, new_score2 = get_elo(team_data[team1][-1], team_data[team2][-1], df.loc[idx]['Win']);
         team_data[team1].append((df.loc[idx]['Date'], new_score1));
         team_data[team2].append((df.loc[idx]['Date'], new_score2));
 
     # plot elo scores over time
     pd.plotting.register_matplotlib_converters();
     years = [2014, 2015, 2016, 2017, 2018, 2019];
-    fig1    = plt.figure();
-    fig2    = plt.figure();
+    fig1  = plt.figure();
+    fig2  = plt.figure();
 
     fig = {};
     axs = {};
@@ -38,6 +40,19 @@ def main():
         legends[year] = [];
     ax1 = fig1.add_axes([0,0,1,1]);
     ax2 = fig2.add_axes([0,0,1,1]);
+
+    # make a unique colormap
+    styles = ['-','--',':','-.'];
+    num_styles = len(styles);
+    num_lines = len(np.unique(df['Name']));
+    num_colors = math.ceil(num_lines/num_styles);
+    cmap = plt.cm.jet(np.matlib.repmat(np.linspace(0,1,num_colors),1,num_styles));
+    styles = np.matlib.repmat(styles,1,num_colors);
+
+    ax1.set_prop_cycle(plt.cycler('color',cmap[0]) + plt.cycler('linestyle',np.sort(styles[0])));
+    ax2.set_prop_cycle(plt.cycler('color',cmap[0]) + plt.cycler('linestyle',np.sort(styles[0])));
+    for year in years:
+        axs[year].set_prop_cycle(plt.cycler('color',cmap[0]) + plt.cycler('linestyle',np.sort(styles[0])));
 
     # break the list of tuples into dates and scores
     for name in np.unique(df['Name']):
@@ -58,6 +73,7 @@ def main():
                 indices = operator.itemgetter(indices);
                 axs[year].plot(indices(np.array(dates)), indices(np.array(scores)));
                 legends[year].append(name);
+
 
     # add legends, labels, make the plots prettier
     anchor_point = (0.,-0.85,1.,.102);
@@ -116,7 +132,8 @@ def get_elo(score1, score2, team1_win):
     eb = qb/(qa+qb);
 
     ra = score1[1] + 32*(team1_win - ea);
-    rb = score2[1] + 32*({"0":1, "1":0}[str(team1_win)] - eb);
+    #rb = score2[1] + 32*({"0":1, "1":0}[str(team1_win)] - eb);
+    rb = score2[1] + 32*(~team1_win + 2 - eb);
 
     return ra, rb;
 

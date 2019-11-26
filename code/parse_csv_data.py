@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 import subprocess
 import csv
 import pandas as pd

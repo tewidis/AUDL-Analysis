@@ -71,6 +71,8 @@ this repository.
 * Calculate a predicted winner before each game and evaluate how often the
   model is correct
 * Begin incorporating other features into the model (home field advantage, etc)
+* Figure out a better way to visualize the data, it's impossible to tell what's
+  going on with so many lines on one plot
 
 ## Conclusion
 Through this project, I became more familiar with using common data science
